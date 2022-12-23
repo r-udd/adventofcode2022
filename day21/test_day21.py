@@ -2,9 +2,9 @@ import operator
 
 
 def solve_a(current, all):
-    operators = {'+': operator.add, '-': operator.sub, '*': operator.mul, '/': operator.floordiv}
+    operators = {'+': operator.add, '-': operator.sub, '*': operator.mul, '/': operator.truediv}
     value = all[current]
-    if isinstance(value, int):
+    if isinstance(value, float):
         return value
     else:
         return operators[value[1]](solve_a(value[0], all), solve_a(value[2], all))
@@ -15,7 +15,7 @@ def parse(text):
     for line in text:
         key, rest = line.split(': ')
         if rest.isdigit():
-            result[key] = int(rest)
+            result[key] = float(rest)
         else:
             result[key] = [rest[:4], rest[5], rest[-4:]]
     return result
@@ -69,4 +69,22 @@ def test_1(day21_lines):
 
 
 def test_2(day21_lines):
-    assert solve_b(day21_lines) == 3217
+    d = parse(day21_lines)
+    monkey1 = d['root'][0]
+    monkey2 = d['root'][2]
+    monkey2_ans = solve_a(monkey2, d)
+    assert monkey2_ans == 52716091087786
+    start = 0
+    end = 52716091087786
+    while True:
+        mid = (start + end) / 2
+        d['humn'] = mid
+        monkey1_ans = solve_a(monkey1, d)
+        diff = monkey1_ans - monkey2_ans
+        if diff == 0:
+            break
+        if diff < 0:
+            end = mid
+        else:
+            start = mid
+    assert d['humn'] == 3352886133831.0
